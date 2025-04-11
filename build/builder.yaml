@@ -1,0 +1,8 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: app.dockerfile
+    image: ${IMAGE_NAME}
+
