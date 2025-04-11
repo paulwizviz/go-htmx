@@ -16,7 +16,11 @@ func staticHandler(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rw.Header().Set("Content-Type", "application/javascript")
-	rw.Write(staticContent)
+	_, err = rw.Write(staticContent)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func homeHandler(rw http.ResponseWriter, r *http.Request) {
@@ -31,7 +35,11 @@ func homeHandler(rw http.ResponseWriter, r *http.Request) {
 
 func clickedHandler(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "text/html")
-	rw.Write([]byte(`<strong>Button clicked!</strong>`))
+	_, err := rw.Write([]byte(`<strong>Button clicked!</strong>`))
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func New() *http.ServeMux {
