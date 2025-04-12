@@ -6,7 +6,7 @@ import (
 	"text/template"
 )
 
-//go:embed static/* templates/*
+//go:embed static/htmx.min.js templates/* css/main.css
 var web embed.FS
 
 func staticHandler(rw http.ResponseWriter, r *http.Request) {
@@ -17,6 +17,20 @@ func staticHandler(rw http.ResponseWriter, r *http.Request) {
 	}
 	rw.Header().Set("Content-Type", "application/javascript")
 	_, err = rw.Write(staticContent)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func cssHandler(rw http.ResponseWriter, r *http.Request) {
+	cssContent, err := web.ReadFile("css/main.css")
+	if err != nil {
+		http.NotFound(rw, r)
+		return
+	}
+	rw.Header().Set("Content-Type", "text/css")
+	_, err = rw.Write(cssContent)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
@@ -46,6 +60,7 @@ func New() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /", homeHandler)
 	mux.HandleFunc("GET /static/htmx.min.js", staticHandler)
+	mux.HandleFunc("GET /css/main.css", cssHandler)
 	mux.HandleFunc("GET /clicked", clickedHandler)
 	return mux
 }
